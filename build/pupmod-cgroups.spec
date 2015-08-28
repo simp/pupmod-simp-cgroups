@@ -3,7 +3,7 @@
 Summary: CGroups Puppet Module
 Name: pupmod-cgroups
 Version: 1.0.0
-Release: 6
+Release: 7
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
@@ -55,6 +55,9 @@ fi
 # Post uninstall stuff
 
 %changelog
+* Wed Sep 2 2015 Nick Miller <nick.miller@onyxpoint.com> - 1.0.0-7
+- Updated with support for travis ci
+
 * Fri Jan 16 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.0-6
 - Changed puppet-server requirement to puppet
 
