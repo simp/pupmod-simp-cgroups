@@ -17,12 +17,10 @@ group :test do
   gem 'simp-rspec-puppet-facts'
 
   # simp-rake-helpers does not suport puppet 2.7.X
-  # FIXME: simp-rake-helpers should support Puppet 4.X
-  if (!(['2','4'].include?( "#{ENV['PUPPET_VERSION']}".split('.').first)) &&
-      ("#{ENV['PUPPET_VERSION']}" !~ /~> ?(2|4)/ ? true : false) ) &&
+  if "#{ENV['PUPPET_VERSION']}".scan(/\d+/).first != '2' &&
       # simp-rake-helpers and ruby 1.8.7 bomb Travis tests
       # TODO: fix upstream deps (parallel in simp-rake-helpers)
-      !( ENV['TRAVIS'] && RUBY_VERSION.sub(/\.\d+$/,'') == '1.8' )
+      RUBY_VERSION.sub(/\.\d+$/,'') != '1.8'
     gem 'simp-rake-helpers'
   end
 end
@@ -32,7 +30,6 @@ group :development do
   gem 'travis-lint'
   gem 'vagrant-wrapper'
   gem 'puppet-blacksmith'
-  gem 'guard'
   gem 'guard-rake'
   gem 'pry'
   gem 'pry-doc'
@@ -41,4 +38,8 @@ end
 group :system_tests do
   gem 'beaker'
   gem 'beaker-rspec'
+  gem 'simp-beaker-helpers'
+  # NOTE: Workaround because net-ssh 2.10 is busting beaker
+  # lib/ruby/1.9.1/socket.rb:251:in `tcp': wrong number of arguments (5 for 4) (ArgumentError)
+  gem 'net-ssh', '~> 2.9.0'
 end

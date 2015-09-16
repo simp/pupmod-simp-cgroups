@@ -4,6 +4,7 @@
 #
 # [*default_mounts*]
 #   Whether or not to set up the default cgroup mounts.
+#   NOTE: These are only effective on RHEL6
 #
 # [*sync_on_update*]
 #   If set to true, then the running cgroup configuration will be saved to
@@ -23,15 +24,9 @@ class cgroups (
   $cgred_gid = '450'
 ){
 
-  if $default_mounts {
-    cgroup { 'cpuset': }
-    cgroup { 'cpu': }
-    cgroup { 'cpuacct': }
-    cgroup { 'memory': }
-    cgroup { 'devices': }
-    cgroup { 'freezer': }
-    cgroup { 'net_cls': }
-    cgroup { 'blkio': }
+  if $default_mounts and is_hash($::cgroups) and !empty($::cgroups) {
+    $system_cgroups = keys($::cgroups)
+    cgroup { $system_cgroups: }
   }
 
   # We want to make sure we're keeping track of the running state of the
