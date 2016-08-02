@@ -24,7 +24,7 @@ class cgroups (
   $cgred_gid = '450'
 ){
 
-  if $default_mounts and is_hash($::cgroups) and !empty($::cgroups) {
+  if $default_mounts and defined('$::cgroups') and is_hash($::cgroups) and !empty($::cgroups) {
     $system_cgroups = keys($::cgroups)
     cgroup { $system_cgroups: }
   }

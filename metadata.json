@@ -1,20 +1,20 @@
 {
-  "name":    "<%= metadata.full_module_name %>",
+  "name":    "simp-cgroups",
   "version": "1.0.1",
-  "author":  "Simp",
+  "author":  "simp",
   "summary": "Safely manages cgroups",
   "license": "Apache-2.0",
   "source":  "https://github.com/simp/pupmod-simp-cgroups",
   "project_page": "https://github.com/simp/pupmod-simp-cgroups",
   "issues_url":   "https://simp-project.atlassian.net",
-  "tags": [ "simp","cgroup" ],
+  "tags": [ "simp","cgroups" ],
   "dependencies": [
     {
-      "name": "puppetlabs-stdlib",
+      "name": "puppetlabs/stdlib",
       "version_requirement": ">= 4.1.0"
     },
     {
-      "name": "simp-common",
+      "name": "simp/simplib",
       "version_requirement": ">= 4.1.0"
     }
   ],

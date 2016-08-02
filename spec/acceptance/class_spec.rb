@@ -24,7 +24,7 @@ describe 'cgroups class' do
     end
 
     required_packages = ['libcgroup','libcgroup-pam']
-    
+
     required_packages.each do |pkg|
       describe package(pkg) do
         it { is_expected.to be_installed }
@@ -44,12 +44,8 @@ describe 'cgroups class' do
       it { is_expected.to exist }
     end
 
-    default_subsystems = on('client', 'cat /proc/cgroups | cut -f1 | grep -v \#').stdout.split("\n").map(&:strip)
-
-    default_subsystems.each do |subsys|
-      describe file(%(/cgroup/#{subsys}/tasks)) do
-        it { is_expected.to be_file }
-      end
+    describe file(%(/cgroup/cpu)) do
+      it { is_expected.to be_directory }
     end
   end
 end
