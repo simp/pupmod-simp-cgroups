@@ -1,61 +1,7 @@
-%global short_name cgroups
+* Tue Aug 02 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.1-0
+- Updated to the new RPM naming structure
 
-Summary: CGroups Puppet Module
-Name: pupmod-cgroups
-Version: 1.0.0
-Release: 7
-License: Apache License, Version 2.0
-Group: Applications/System
-Source: %{name}-%{version}-%{release}.tar.gz
-Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-Requires: puppet >= 3.3.0
-Buildarch: noarch
-Requires: simp-bootstrap >= 4.2.0
-Obsoletes: pupmod-cgroups-test
-
-Prefix:"/etc/puppet/environments/simp/modules/%{short_name}"
-
-%description
-This puppet module provides for the management of CGroups on a Linux system.
-See http://www.kernel.org/doc/Documentation/cgroups/cgroups.txt for additional
-information.
-
-%prep
-%setup -q
-
-%build
-
-%install
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
-
-mkdir -p %{buildroot}/%{prefix}
-
-dirs='files lib manifests templates'
-for dir in $dirs; do
-  test -d $dir && cp -r $dir %{buildroot}/%{prefix}
-done
-
-mkdir -p %{buildroot}/usr/share/simp/tests/modules/%{short_name}
-
-%clean
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
-
-%files
-%defattr(0640,root,puppet,0750)
-/etc/puppet/environments/simp/modules/%{short_name}
-
-%post
-#!/bin/sh
-
-if [ -d /etc/puppet/environments/simp/modules/%{short_name}/plugins ]; then
-  /bin/mv /etc/puppet/environments/simp/modules/%{short_name}/plugins /etc/puppet/environments/simp/modules/%{short_name}/plugins.bak
-fi
-
-%postun
-# Post uninstall stuff
-
-%changelog
-* Wed Sep 2 2015 Nick Miller <nick.miller@onyxpoint.com> - 1.0.0-7
+* Wed Sep 02 2015 Nick Miller <nick.miller@onyxpoint.com> - 1.0.0-7
 - Updated with support for travis ci
 
 * Fri Jan 16 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.0-6

@@ -3,7 +3,6 @@ require 'tmpdir'
 require 'yaml'
 require 'simp/beaker_helpers'
 include Simp::BeakerHelpers
-require File.join(File.dirname(__FILE__),'helpers')
 
 unless ENV['BEAKER_provision'] == 'no'
   hosts.each do |host|
@@ -16,24 +15,10 @@ unless ENV['BEAKER_provision'] == 'no'
   end
 end
 
-RSpec.configure do |c|
-  c.include Helpers
 
+RSpec.configure do |c|
   # ensure that environment OS is ready on each host
   fix_errata_on hosts
-
-  # FIXME: The EL6 tests need to install rsyslog7.  However, puppetlabs'
-  # centos6 vagrant box comes with rsyslog + a big dep chain, which stops
-  # rsyslog7 from getting installed.
-  #
-  # This workaround shanks rsyslog out of the way, however the module itself
-  # should handle this upgrade somehow.
-  hosts.each do |sut|
-    if fact_on(sut, 'osfamily') == 'RedHat' && fact_on(sut, 'operatingsystemmajrelease') == '6'
-      on(sut, 'rpm -q rsyslog && rpm -e --nodeps rsyslog', :accept_all_exit_codes => true )
-      puts '*'*400 + " ^^ FIXME in the module!"
-    end
-  end
 
   # Readable test descriptions
   c.formatter = :documentation
@@ -43,16 +28,26 @@ RSpec.configure do |c|
     begin
       # Install modules and dependencies from spec/fixtures/modules
       copy_fixture_modules_to( hosts )
-      Dir.mktmpdir do |cert_dir|
-        run_fake_pki_ca_on( default, hosts, cert_dir )
-        hosts.each{ |host| copy_pki_to( host, cert_dir, '/etc/pki/simp-testing' )}
+      begin
+        server = only_host_with_role(hosts, 'server')
+      rescue ArgumentError =>e
+        server = only_host_with_role(hosts, 'default')
       end
-    rescue StandardError, ScriptError => e
-      require 'pry'; binding.pry if ENV['PRY']
-    end
-  end
 
-  c.after :all do
-    clear_temp_hieradata
+      # Generate and install PKI certificates on each SUT
+      Dir.mktmpdir do |cert_dir|
+        run_fake_pki_ca_on(server, hosts, cert_dir )
+        hosts.each{ |sut| copy_pki_to( sut, cert_dir, '/etc/pki/simp-testing' )}
+      end
+
+      # add PKI keys
+      copy_keydist_to(server)
+    rescue StandardError, ScriptError => e
+      if ENV['PRY']
+        require 'pry'; binding.pry
+      else
+        raise e
+      end
+    end
   end
 end
