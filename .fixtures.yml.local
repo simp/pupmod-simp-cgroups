@@ -1,6 +1,0 @@
----
-fixtures:
-  symlinks:
-    cgroups: "#{source_dir}"
-    common: "#{source_dir}/../common"
-    stdlib: "#{source_dir}/../stdlib"
