@@ -1,31 +1,27 @@
-# == Class: cgroups
+# Init cgroups
 #
-# == Parameters
-#
-# [*default_mounts*]
+# @param default_mounts
 #   Whether or not to set up the default cgroup mounts.
 #   NOTE: These are only effective on RHEL6
 #
-# [*sync_on_update*]
+# @param sync_on_update
 #   If set to true, then the running cgroup configuration will be saved to
 #   /etc/cgconfig.conf each time puppet runs and changes rules or
 #   permissions.
 #
-# [*cgred_id*]
+# @param cgred_id
 #   The GID to use for the cgred group.
 #
-# == Authors
-#
-# * Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class cgroups (
-  $default_mounts = true,
-  $sync_on_update = true,
-  $cgred_gid = '450'
+  Boolean $default_mounts = true,
+  Boolean $sync_on_update = true,
+  Integer $cgred_gid      = 450
 ){
 
   if $default_mounts and defined('$::cgroups') and is_hash($::cgroups) and !empty($::cgroups) {
-    $system_cgroups = keys($::cgroups)
+    $system_cgroups = keys($facts['cgroups'])
     cgroup { $system_cgroups: }
   }
 
@@ -53,9 +49,4 @@ class cgroups (
     hasrestart => true,
     require    => Package['libcgroup']
   }
-
-  validate_bool($default_mounts)
-  validate_bool($sync_on_update)
-  validate_integer($cgred_gid)
 }
-
